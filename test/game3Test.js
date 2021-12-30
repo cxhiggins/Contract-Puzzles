@@ -12,14 +12,26 @@ describe("Game3", function() {
     // hardhat will create 10 accounts for you by default
     // you can get one of this accounts with ethers.provider.getSigner
     // and passing in the zero-based indexed of the signer you want:
-    const signer = ethers.provider.getSigner(0);
-    const address = await signer.getAddress();
+    
+    let addresses = [];
+    const values = {
+      0: 2,
+      1: 3,
+      2: 1
+    };
 
-    // to call a contract as a signer you can use contract.connect
-    await game.connect(signer).buy({ value: "1" });
+    for (let i = 0; i < 3; i++) {
+      const signer = ethers.provider.getSigner(i);
+      const address = await signer.getAddress();
+
+      // to call a contract as a signer you can use contract.connect
+      await game.connect(signer).buy({ value: values[i] });
+
+      addresses.push(address);
+    }
 
     // TODO: win expects three arguments
-    await game.win();
+    await game.win(...addresses);
 
     // leave this assertion as-is
     assert(await game.isWon(), "You did not win the game");
